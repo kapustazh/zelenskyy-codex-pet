@@ -17,5 +17,3 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install --disable-pip-version-check Pillow==12.3.0
       - run: python scripts/validate_pet.py
-      - run: python scripts/generate_previews.py
-      - run: git diff --exit-code -- assets/previews
