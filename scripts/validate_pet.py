@@ -37,7 +37,7 @@ def main() -> None:
             visible = alpha.getbbox() is not None
             assert visible == (column < used_count), f"row {row}, column {column} has unexpected occupancy"
 
-    rgba = atlas.get_flattened_data()
+    rgba = atlas.get_flattened_data() if hasattr(atlas, "get_flattened_data") else atlas.getdata()
     residue = sum(1 for red, green, blue, alpha in rgba if alpha == 0 and (red or green or blue))
     assert residue == 0, f"found {residue} transparent pixels with hidden RGB residue"
     print("OK: valid 1536x2288 Codex pet v2 atlas (8 columns x 11 rows)")
