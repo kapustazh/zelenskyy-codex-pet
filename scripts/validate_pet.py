@@ -8,21 +8,11 @@ from pathlib import Path
 
 from PIL import Image
 
+from generate_previews import STATES, animation_frames
+
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_COUNTS = [7, 8, 8, 4, 5, 8, 6, 6, 6, 8, 8]
-PREVIEW_COUNTS = {
-    "idle": 7,
-    "running-right": 8,
-    "running-left": 8,
-    "waving": 4,
-    "jumping": 5,
-    "failed": 8,
-    "waiting": 6,
-    "running": 6,
-    "review": 6,
-    "looking-around": 16,
-}
 CELL_WIDTH = 192
 CELL_HEIGHT = 208
 
@@ -58,11 +48,19 @@ def main() -> None:
         assert thumbnail.size == (384, 416), "unexpected thumbnail size"
     with Image.open(preview_root / "contact-sheet.png") as contact_sheet:
         assert contact_sheet.size == (768, 1386), "unexpected contact sheet size"
-    for name, frame_count in PREVIEW_COUNTS.items():
-        preview = preview_root / "gifs" / f"{name}.gif"
+    for name, row, durations in STATES:
+        preview = preview_root / "webp" / f"{name}.webp"
         with Image.open(preview) as animation:
             assert animation.size == (384, 416), f"unexpected size for {preview}"
-            assert animation.n_frames == frame_count, f"unexpected frame count for {preview}"
+            assert animation.n_frames == len(durations), f"unexpected frame count for {preview}"
+            assert animation.info["loop"] == 0, f"{preview} must loop"
+            for index, expected in enumerate(animation_frames(atlas, row, len(durations))):
+                animation.seek(index)
+                # Premultiply to ignore unused RGB under fully transparent pixels.
+                assert animation.convert("RGBa").tobytes() == expected.convert("RGBa").tobytes(), (
+                    f"{preview} frame {index} differs from the atlas"
+                )
+                assert animation.info["duration"] == durations[index], f"unexpected timing for {preview}"
     print("OK: valid 1536x2288 Codex pet v2 atlas (8 columns x 11 rows)")
 
 
