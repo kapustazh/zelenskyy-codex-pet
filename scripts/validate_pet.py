@@ -59,11 +59,10 @@ def main() -> None:
     with Image.open(preview_root / "contact-sheet.png") as contact_sheet:
         assert contact_sheet.size == (768, 1386), "unexpected contact sheet size"
     for name, frame_count in PREVIEW_COUNTS.items():
-        for extension in ("gif", "webp"):
-            preview = preview_root / ("gifs" if extension == "gif" else "webp") / f"{name}.{extension}"
-            with Image.open(preview) as animation:
-                assert animation.size == (384, 416), f"unexpected size for {preview}"
-                assert animation.n_frames == frame_count, f"unexpected frame count for {preview}"
+        preview = preview_root / "gifs" / f"{name}.gif"
+        with Image.open(preview) as animation:
+            assert animation.size == (384, 416), f"unexpected size for {preview}"
+            assert animation.n_frames == frame_count, f"unexpected frame count for {preview}"
     print("OK: valid 1536x2288 Codex pet v2 atlas (8 columns x 11 rows)")
 
 

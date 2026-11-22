@@ -35,9 +35,7 @@ def frame(atlas: Image.Image, row: int, column: int) -> Image.Image:
 def save_animation(frames: list[Image.Image], durations: list[int], name: str) -> None:
     enlarged = [item.resize((CELL[0] * SCALE, CELL[1] * SCALE), Image.Resampling.NEAREST) for item in frames]
     gif_dir = OUTPUT / "gifs"
-    webp_dir = OUTPUT / "webp"
     gif_dir.mkdir(parents=True, exist_ok=True)
-    webp_dir.mkdir(parents=True, exist_ok=True)
     enlarged[0].save(
         gif_dir / f"{name}.gif",
         save_all=True,
@@ -46,17 +44,6 @@ def save_animation(frames: list[Image.Image], durations: list[int], name: str) -
         loop=0,
         optimize=False,
         disposal=2,
-    )
-    enlarged[0].save(
-        webp_dir / f"{name}.webp",
-        save_all=True,
-        append_images=enlarged[1:],
-        duration=durations,
-        loop=0,
-        lossless=False,
-        quality=90,
-        method=4,
-        exact=True,
     )
 
 
