@@ -14,7 +14,7 @@ OUTPUT = ROOT / "assets" / "previews"
 CELL = (192, 208)
 SCALE = 2
 
-STATES = [
+STANDARD_STATES = [
     ("idle", 0, [280, 110, 110, 140, 140, 320, 320]),
     ("running-right", 1, [120] * 7 + [220]),
     ("running-left", 2, [120] * 7 + [220]),
@@ -25,6 +25,7 @@ STATES = [
     ("running", 7, [120, 120, 120, 120, 120, 220]),
     ("review", 8, [150, 150, 150, 150, 150, 280]),
 ]
+STATES = STANDARD_STATES + [("looking-around", 9, [160] * 15 + [260])]
 
 
 def frame(atlas: Image.Image, row: int, column: int) -> Image.Image:
@@ -32,18 +33,26 @@ def frame(atlas: Image.Image, row: int, column: int) -> Image.Image:
     return atlas.crop((column * width, row * height, (column + 1) * width, (row + 1) * height)).convert("RGBA")
 
 
+def animation_frames(atlas: Image.Image, row: int, count: int) -> list[Image.Image]:
+    size = (CELL[0] * SCALE, CELL[1] * SCALE)
+    return [
+        frame(atlas, row + index // 8, index % 8).resize(size, Image.Resampling.NEAREST)
+        for index in range(count)
+    ]
+
+
 def save_animation(frames: list[Image.Image], durations: list[int], name: str) -> None:
-    enlarged = [item.resize((CELL[0] * SCALE, CELL[1] * SCALE), Image.Resampling.NEAREST) for item in frames]
-    gif_dir = OUTPUT / "gifs"
-    gif_dir.mkdir(parents=True, exist_ok=True)
-    enlarged[0].save(
-        gif_dir / f"{name}.gif",
+    webp_dir = OUTPUT / "webp"
+    webp_dir.mkdir(parents=True, exist_ok=True)
+    # GIF makes translucent edge pixels opaque. Lossless WebP preserves RGBA.
+    frames[0].save(
+        webp_dir / f"{name}.webp",
         save_all=True,
-        append_images=enlarged[1:],
+        append_images=frames[1:],
         duration=durations,
         loop=0,
-        optimize=False,
-        disposal=2,
+        lossless=True,
+        method=6,
     )
 
 
@@ -63,8 +72,8 @@ def make_contact_sheet(atlas: Image.Image) -> None:
     sheet = Image.new("RGB", (cell_width * 8, (cell_height + label_height) * 11), "#f7f7f7")
     draw = ImageDraw.Draw(sheet)
     font = ImageFont.load_default()
-    labels = [name for name, _, _ in STATES] + ["look 000-157.5", "look 180-337.5"]
-    counts = [len(durations) for _, _, durations in STATES] + [8, 8]
+    labels = [name for name, _, _ in STANDARD_STATES] + ["look 000-157.5", "look 180-337.5"]
+    counts = [len(durations) for _, _, durations in STANDARD_STATES] + [8, 8]
     for row, (label, count) in enumerate(zip(labels, counts, strict=True)):
         y = row * (cell_height + label_height)
         draw.rectangle((0, y, sheet.width, y + label_height - 1), fill="#111111")
@@ -93,10 +102,8 @@ def main() -> None:
     thumbnail.save(OUTPUT / "thumbnail.webp", format="WEBP", lossless=True, method=6, exact=True)
 
     for name, row, durations in STATES:
-        save_animation([frame(atlas, row, column) for column in range(len(durations))], durations, name)
+        save_animation(animation_frames(atlas, row, len(durations)), durations, name)
 
-    look_frames = [frame(atlas, 9, column) for column in range(8)] + [frame(atlas, 10, column) for column in range(8)]
-    save_animation(look_frames, [160] * 15 + [260], "looking-around")
     make_contact_sheet(atlas)
     print(f"Generated previews in {OUTPUT}")
 

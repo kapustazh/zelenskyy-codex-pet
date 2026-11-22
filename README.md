@@ -51,13 +51,13 @@ If `CODEX_HOME` is set, use `$CODEX_HOME/pets/zelenskyy/` instead.
 
 | Thinking / working | Speaking / asking |
 |:---:|:---:|
-| ![Zelenskyy thinking](assets/previews/gifs/running.gif) | ![Zelenskyy speaking](assets/previews/gifs/waiting.gif) |
+| ![Zelenskyy thinking](assets/previews/webp/running.webp) | ![Zelenskyy speaking](assets/previews/webp/waiting.webp) |
 | Waving | Reviewing |
-| ![Zelenskyy waving](assets/previews/gifs/waving.gif) | ![Zelenskyy reviewing](assets/previews/gifs/review.gif) |
+| ![Zelenskyy waving](assets/previews/webp/waving.webp) | ![Zelenskyy reviewing](assets/previews/webp/review.webp) |
 | Running | Jumping |
-| ![Zelenskyy running](assets/previews/gifs/running-right.gif) | ![Zelenskyy jumping](assets/previews/gifs/jumping.gif) |
+| ![Zelenskyy running](assets/previews/webp/running-right.webp) | ![Zelenskyy jumping](assets/previews/webp/jumping.webp) |
 | Recovering from failure | Looking around |
-| ![Zelenskyy reacting to failure](assets/previews/gifs/failed.gif) | ![Zelenskyy looking around](assets/previews/gifs/looking-around.gif) |
+| ![Zelenskyy reacting to failure](assets/previews/webp/failed.webp) | ![Zelenskyy looking around](assets/previews/webp/looking-around.webp) |
 
 <details>
 <summary>View the complete 11-row animation atlas</summary>
